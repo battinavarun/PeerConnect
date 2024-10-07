@@ -1,0 +1,145 @@
+/* src/Courses.css */
+
+/* General Page Styles */
+.courses-page {
+    font-family: 'Arial, sans-serif';
+    color: #2c3e50;
+    background: #f4f7fa;
+    padding-bottom: 60px;
+  }
+  
+  /* Hero Section */
+  .courses-hero {
+    background: linear-gradient(to right, #4285f4, #357ae8);
+    color: white;
+    text-align: center;
+    padding: 80px 20px;
+    margin-bottom: 40px;
+    border-bottom: 3px solid #2d69d1;
+  }
+  
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  
+  .hero-description {
+    font-size: 1.3rem;
+    width: 70%;
+    margin: auto;
+    line-height: 1.6;
+  }
+  
+  /* Container for Courses */
+  .courses-container {
+    padding: 20px 30px;
+  }
+  
+  /* Course Card Styles */
+  .course-col {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  
+  .course-card {
+    width: 100%;
+    max-width: 400px;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+    overflow: hidden;
+  }
+  
+  .course-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Course Image Container with Overlay */
+  .course-image-container {
+    position: relative;
+  }
+  
+  .course-image {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.4s ease-in-out;
+  }
+  
+  .course-image-container:hover .course-image {
+    transform: scale(1.05);
+  }
+  
+  .course-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+  }
+  
+  .course-image-container:hover .course-overlay {
+    opacity: 1;
+  }
+  
+  .overlay-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .overlay-button {
+    background-color: #f8c45c;
+    color: #2c3e50;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .overlay-button:hover {
+    background-color: #ffd700;
+  }
+  
+  /* Card Body Styling */
+  .course-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #34495e;
+    margin-bottom: 10px;
+  }
+  
+  .course-text {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+  }
+  
+  /* Button Styling */
+  .course-button {
+    background-color: #4285f4;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .course-button:hover {
+    background-color: #357ae8;
+  }
+  
