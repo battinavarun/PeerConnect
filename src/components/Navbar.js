@@ -124,6 +124,15 @@ function MyNavbar() {
               >
                 Courses
               </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/assignments"
+                style={navLinkStyle}
+                onMouseOver={(e) => (e.target.style.color = '#FFC107')}
+                onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
+              >
+                Assignments
+              </Nav.Link>
               {isLoggedIn ? (
                 <LogoutButton
                   as={Button}
