@@ -115,15 +115,7 @@ function MyNavbar() {
               >
                 Peer Review
               </Nav.Link>
-              <Nav.Link
-                as={Link}
-                to="/courses"
-                style={navLinkStyle}
-                onMouseOver={(e) => (e.target.style.color = '#FFC107')}
-                onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
-              >
-                Courses
-              </Nav.Link>
+              
               <Nav.Link
                 as={Link}
                 to="/assignments"
