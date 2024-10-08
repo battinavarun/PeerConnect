@@ -1,90 +1,108 @@
+/* Assignments.css */
+
 .assignments-container {
-    padding: 2rem 0;
-  }
-  
-  .assignments-title {
-    color: #4285F4;
-    margin-bottom: 1.5rem;
-    font-weight: bold;
-  }
-  
-  .nav-tabs {
-    border-bottom: 2px solid #4285F4;
-  }
-  
-  .nav-tabs .nav-link {
-    color: #5f6368;
-    border: none;
-    padding: 0.5rem 1rem;
-    margin-right: 1rem;
-  }
-  
-  .nav-tabs .nav-link:hover {
-    border: none;
-    color: #4285F4;
-  }
-  
-  .nav-tabs .nav-link.active {
-    color: #4285F4;
-    background-color: transparent;
-    border: none;
-    border-bottom: 2px solid #4285F4;
-  }
-  
-  .btn-primary {
-    background-color: #4285F4;
-    border-color: #4285F4;
-  }
-  
-  .btn-primary:hover {
-    background-color: #3367D6;
-    border-color: #3367D6;
-  }
-  
-  .assignment-card {
-    height: 100%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-  }
-  
-  .assignment-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  .assignment-card .card-title {
-    color: #4285F4;
-    font-weight: bold;
-  }
-  
-  .assignment-card .card-text {
-    color: #5f6368;
-  }
-  
-  .modal-title {
-    color: #4285F4;
-  }
-  
-  .form-label {
-    font-weight: bold;
-    color: #5f6368;
-  }
-  
-  .form-control:focus {
-    border-color: #4285F4;
-    box-shadow: 0 0 0 0.2rem rgba(66, 133, 244, 0.25);
-  }
-  
-  .react-datepicker-wrapper {
-    width: 100%;
-  }
-  
-  .btn-outline-primary {
-    color: #4285F4;
-    border-color: #4285F4;
-  }
-  
-  .btn-outline-primary:hover {
-    background-color: #4285F4;
-    color: white;
-  }
+  padding: 2rem 0;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.assignments-title {
+  font-size: 2.5rem;
+  color: #343a40;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 300;
+}
+
+.assignment-card {
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.assignment-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.assignment-card .card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.assignment-card .card-text {
+  color: #6c757d;
+}
+
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+  border: none;
+  color: #495057;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+}
+
+.nav-tabs .nav-link:hover {
+  border: none;
+  color: #007bff;
+}
+
+.nav-tabs .nav-link.active {
+  border: none;
+  border-bottom: 2px solid #007bff;
+  color: #007bff;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.btn-outline-primary {
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.modal-content {
+  border-radius: 0.5rem;
+}
+
+.modal-header {
+  border-bottom: none;
+  padding: 1.5rem 1.5rem 0.5rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.form-control {
+  border-radius: 0.25rem;
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.react-datepicker-wrapper {
+  display: block;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+}

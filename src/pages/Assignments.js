@@ -5,8 +5,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import './Assignments.css';
 
 const Assignments = () => {
-  const [projects, setProjects] = useState([]);
-  const [reviews, setReviews] = useState([]);
+  const [projects, setProjects] = useState(() => {
+    const savedProjects = localStorage.getItem('projects');
+    return savedProjects ? JSON.parse(savedProjects) : [];
+  });
+  const [reviews, setReviews] = useState(() => {
+    const savedReviews = localStorage.getItem('reviews');
+    return savedReviews ? JSON.parse(savedReviews) : [];
+  });
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [newItem, setNewItem] = useState({
@@ -18,19 +24,12 @@ const Assignments = () => {
   });
 
   useEffect(() => {
-    // Fetch projects and reviews from API
-    // For demonstration, we'll use mock data
-    const mockProjects = [
-      { id: 1, title: 'Web Application Design', dueDate: '2024-11-15', groupSize: 3 },
-      { id: 2, title: 'Database Systems Project', dueDate: '2024-12-01', groupSize: 2 },
-    ];
-    const mockReviews = [
-      { id: 1, title: 'UI/UX Evaluation', dueDate: '2024-11-20', reviewersPerProject: 2 },
-      { id: 2, title: 'Code Quality Assessment', dueDate: '2024-12-05', reviewersPerProject: 3 },
-    ];
-    setProjects(mockProjects);
-    setReviews(mockReviews);
-  }, []);
+    localStorage.setItem('projects', JSON.stringify(projects));
+  }, [projects]);
+
+  useEffect(() => {
+    localStorage.setItem('reviews', JSON.stringify(reviews));
+  }, [reviews]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,10 +42,11 @@ const Assignments = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const newItemWithId = { ...newItem, id: Date.now(), dueDate: newItem.dueDate.toISOString() };
     if (modalType === 'project') {
-      setProjects([...projects, { ...newItem, id: Date.now() }]);
+      setProjects(prevProjects => [...prevProjects, newItemWithId]);
     } else {
-      setReviews([...reviews, { ...newItem, id: Date.now() }]);
+      setReviews(prevReviews => [...prevReviews, newItemWithId]);
     }
     setShowModal(false);
     setNewItem({

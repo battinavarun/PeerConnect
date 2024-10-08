@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import PeerReview from './pages/PeerReview';
 import Assignments from './pages/Assignments';
+import Dashboard from './pages/Dashboard';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/peerreview" element={<PeerReview />} />
         <Route path="/assignments" element={<Assignments />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         
         
       </Routes>

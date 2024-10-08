@@ -16,12 +16,13 @@ const Login = () => {
     setError('');
 
     if (isAdmin) {
-      const adminEmail = process.env.REACT_APP_ADMIN_EMAIL;
-      const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD;
+      const adminEmail = 'battinavarun@gmail.com';
+      const adminPassword = 'Varun@11';
 
       if (email === adminEmail && password === adminPassword) {
         localStorage.setItem('isAdmin', 'true');
-        navigate('/admin-dashboard');
+        localStorage.setItem('isLoggedIn', 'true');
+        navigate('/dashboard');
       } else {
         setError('Invalid admin credentials');
       }
@@ -31,6 +32,7 @@ const Login = () => {
 
       if (email === storedEmail && password === storedPassword) {
         localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('isAdmin', 'false');
         navigate('/');
       } else {
         setError('Invalid email or password');

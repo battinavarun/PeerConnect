@@ -38,18 +38,39 @@ function MyNavbar() {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
-  
-  // Check if user is logged in
-  const isLoggedIn = localStorage.getItem('userEmail') !== null;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    const checkLoginStatus = () => {
+      const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true';
+      setIsLoggedIn(loggedInStatus);
+    };
+
+    // Check login status immediately
+    checkLoginStatus();
+
+    // Set up an interval to check login status periodically
+    const intervalId = setInterval(checkLoginStatus, 1000); // Check every second
+
+    // Set up event listener for storage changes
+    window.addEventListener('storage', checkLoginStatus);
+
     if (isLoggedIn) {
       const blinkInterval = setInterval(() => {
         setIsBlinking((prev) => !prev);
       }, 5000); // Toggle blinking every 5 seconds
 
-      return () => clearInterval(blinkInterval);
+      return () => {
+        clearInterval(blinkInterval);
+        clearInterval(intervalId);
+        window.removeEventListener('storage', checkLoginStatus);
+      };
     }
+
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener('storage', checkLoginStatus);
+    };
   }, [isLoggedIn]);
 
   const handleLogoutClick = () => {
@@ -57,8 +78,11 @@ function MyNavbar() {
   };
 
   const handleLogoutConfirm = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('isAdmin');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userPassword');
+    setIsLoggedIn(false);
     setShowLogoutModal(false);
     navigate('/login');
   };
@@ -115,7 +139,6 @@ function MyNavbar() {
               >
                 Peer Review
               </Nav.Link>
-              
               <Nav.Link
                 as={Link}
                 to="/assignments"
