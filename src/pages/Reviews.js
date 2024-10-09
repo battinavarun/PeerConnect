@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Star, Send, ChevronDown, ChevronUp, Search, Filter, BarChart2 } from 'lucide-react';
+import { Star, Send, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import './Reviews.css';
 
 const ReviewCard = ({ review, projectTitle }) => (
-  <motion.div 
+  <motion.div
     className="review-card"
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -40,8 +39,8 @@ const AddReviewForm = ({ projectId, projectTitle, onSubmit, onCancel }) => {
   };
 
   return (
-    <motion.form 
-      onSubmit={handleSubmit} 
+    <motion.form
+      onSubmit={handleSubmit}
       className="add-review-form"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -74,55 +73,6 @@ const AddReviewForm = ({ projectId, projectTitle, onSubmit, onCancel }) => {
   );
 };
 
-const ReviewStats = ({ reviews }) => {
-  const averageRating = useMemo(() => {
-    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
-    return (sum / reviews.length).toFixed(1);
-  }, [reviews]);
-
-  const ratingCounts = useMemo(() => {
-    return reviews.reduce((acc, review) => {
-      acc[review.rating] = (acc[review.rating] || 0) + 1;
-      return acc;
-    }, {});
-  }, [reviews]);
-
-  const chartData = useMemo(() => {
-    return Object.entries(ratingCounts).map(([rating, count]) => ({
-      rating: Number(rating),
-      count,
-    })).sort((a, b) => a.rating - b.rating);
-  }, [ratingCounts]);
-
-  return (
-    <div className="review-stats">
-      <div className="stat-card">
-        <h3>Average Rating</h3>
-        <div className="average-rating">
-          <span>{averageRating}</span>
-          <div className="rating">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} size={20} fill={i < Math.round(averageRating) ? "#ffc107" : "none"} stroke={i < Math.round(averageRating) ? "#ffc107" : "#ccc"} />
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="stat-card">
-        <h3>Rating Distribution</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="rating" />
-            <YAxis />
-            <Tooltip />
-            <Line type="monotone" dataKey="count" stroke="#8884d8" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
-};
-
 export default function Reviews() {
   const [projects, setProjects] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -130,7 +80,6 @@ export default function Reviews() {
   const [showAddReview, setShowAddReview] = useState(false);
   const [expandedProject, setExpandedProject] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterRating, setFilterRating] = useState(0);
 
   useEffect(() => {
     // Load projects and reviews from localStorage
@@ -146,8 +95,8 @@ export default function Reviews() {
     localStorage.setItem('reviews', JSON.stringify(updatedReviews));
 
     // Update the project's review count
-    const updatedProjects = projects.map(project => 
-      project.id === newReview.projectId 
+    const updatedProjects = projects.map(project =>
+      project.id === newReview.projectId
         ? { ...project, reviews: (project.reviews || 0) + 1 }
         : project
     );
@@ -162,11 +111,15 @@ export default function Reviews() {
   };
 
   const filteredReviews = useMemo(() => {
-    return reviews.filter(review => 
-      (review.content && review.content.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (filterRating === 0 || review.rating === filterRating)
+    return reviews.filter(review =>
+      (review.content && review.content.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-  }, [reviews, searchTerm, filterRating]);
+  }, [reviews, searchTerm]);
+
+  // Get most recent reviews
+  const recentReviews = useMemo(() => {
+    return [...filteredReviews].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+  }, [filteredReviews]);
 
   return (
     <div className="reviews-page">
@@ -175,32 +128,32 @@ export default function Reviews() {
         <div className="review-tools">
           <div className="search-bar">
             <Search size={20} />
-            <input 
-              type="text" 
-              placeholder="Search reviews..." 
+            <input
+              type="text"
+              placeholder="Search reviews..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="filter-dropdown">
-            <Filter size={20} />
-            <select value={filterRating} onChange={(e) => setFilterRating(Number(e.target.value))}>
-              <option value={0}>All Ratings</option>
-              {[1, 2, 3, 4, 5].map(rating => (
-                <option key={rating} value={rating}>{rating} Star{rating !== 1 ? 's' : ''}</option>
-              ))}
-            </select>
-          </div>
         </div>
       </header>
 
-      <ReviewStats reviews={filteredReviews} />
+      <div className="recent-reviews">
+        <h2>Most Recent Reviews</h2>
+        {recentReviews.length > 0 ? (
+          recentReviews.map(review => (
+            <ReviewCard key={review.date} review={review} projectTitle={projects.find(p => p.id === review.projectId)?.name || "Unknown Project"} />
+          ))
+        ) : (
+          <p>No recent reviews found.</p>
+        )}
+      </div>
 
       <div className="project-list">
         {projects.map(project => (
           <div key={project.id} className="project-item">
             <div className="project-summary" onClick={() => toggleProjectExpansion(project.id)}>
-              <h3>{project.title}</h3>
+              <h3>{project.name}</h3>
               <span>{project.reviews || 0} reviews</span>
               {expandedProject === project.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
@@ -213,13 +166,13 @@ export default function Reviews() {
                   transition={{ duration: 0.3 }}
                 >
                   <div className="project-reviews">
-                    {filteredReviews.filter(review => review.projectId === project.id).map((review, index) => (
-                      <ReviewCard key={index} review={review} projectTitle={project.title} />
+                    {filteredReviews.filter(review => review.projectId === project.id).map((review) => (
+                      <ReviewCard key={review.date} review={review} projectTitle={project.name} />
                     ))}
                     {filteredReviews.filter(review => review.projectId === project.id).length === 0 && (
                       <p>No reviews found for this project.</p>
                     )}
-                    <button 
+                    <button
                       className="add-review-btn"
                       onClick={() => {
                         setSelectedProject(project);
@@ -240,7 +193,7 @@ export default function Reviews() {
         {showAddReview && selectedProject && (
           <AddReviewForm
             projectId={selectedProject.id}
-            projectTitle={selectedProject.title}
+            projectTitle={selectedProject.name}
             onSubmit={handleAddReview}
             onCancel={() => setShowAddReview(false)}
           />
