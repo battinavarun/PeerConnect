@@ -1,204 +1,322 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Star, Send, ChevronDown, ChevronUp, Search } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Star, BarChart2, MessageSquare, User, Calendar, Award, TrendingUp, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import './Reviews.css';
 
-const ReviewCard = ({ review, projectTitle }) => (
-  <motion.div
-    className="review-card"
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -20 }}
-    transition={{ duration: 0.3 }}
-  >
-    <div className="review-header">
-      <h4>{projectTitle}</h4>
-      <div className="rating">
-        {[...Array(5)].map((_, i) => (
-          <Star key={i} size={16} fill={i < review.rating ? "#ffc107" : "none"} stroke={i < review.rating ? "#ffc107" : "#ccc"} />
-        ))}
-      </div>
-    </div>
-    <div className="review-meta">
-      <span className="reviewer">{review.reviewer}</span>
-      <span className="review-date">{new Date(review.date).toLocaleDateString()}</span>
-    </div>
-    <p>{review.content}</p>
-  </motion.div>
-);
+const Reviews = () => {
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [newReview, setNewReview] = useState({ rating: 0, comment: '' });
+  const [statistics, setStatistics] = useState({
+    averageRating: 0,
+    totalReviews: 0,
+    ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    recentTrend: []
+  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState('desc');
 
-const AddReviewForm = ({ projectId, projectTitle, onSubmit, onCancel }) => {
-  const [content, setContent] = useState('');
-  const [rating, setRating] = useState(0);
+  const itemsPerPage = 5;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit({ projectId, content, rating, reviewer: 'Anonymous', date: new Date().toISOString() });
-    setContent('');
-    setRating(0);
-  };
+  useEffect(() => {
+    // Fetch projects from localStorage
+    const savedProjects = localStorage.getItem('projects');
+    if (savedProjects) {
+      const parsedProjects = JSON.parse(savedProjects).map(project => ({
+        ...project,
+        reviews: project.reviews || []
+      }));
+      setProjects(parsedProjects);
+    }
+  }, []);
 
-  return (
-    <motion.form
-      onSubmit={handleSubmit}
-      className="add-review-form"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-    >
-      <h4>Add Review for {projectTitle}</h4>
-      <textarea
-        placeholder="Write your review..."
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        required
-      />
-      <div className="rating-input">
-        {[...Array(5)].map((_, i) => (
+  useEffect(() => {
+    if (selectedProject) {
+      calculateStatistics(selectedProject.reviews);
+    }
+  }, [selectedProject]);
+
+  const calculateStatistics = useCallback((reviews) => {
+    const totalReviews = reviews.length;
+    const sumRatings = reviews.reduce((sum, review) => sum + review.rating, 0);
+    const averageRating = totalReviews > 0 ? sumRatings / totalReviews : 0;
+    
+    const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    reviews.forEach(review => {
+      distribution[review.rating]++;
+    });
+
+    // Calculate recent trend (last 10 reviews)
+    const recentReviews = reviews.slice(-10).reverse();
+    const recentTrend = recentReviews.map((review, index) => ({
+      id: index + 1,
+      rating: review.rating
+    }));
+
+    setStatistics({
+      averageRating: averageRating.toFixed(1),
+      totalReviews,
+      ratingDistribution: distribution,
+      recentTrend
+    });
+  }, []);
+
+  const handleProjectSelect = useCallback((project) => {
+    setSelectedProject(project);
+    setCurrentPage(1);
+    setSearchTerm('');
+  }, []);
+
+  const handleRatingChange = useCallback((rating) => {
+    setNewReview(prev => ({ ...prev, rating }));
+  }, []);
+
+  const handleCommentChange = useCallback((e) => {
+    setNewReview(prev => ({ ...prev, comment: e.target.value }));
+  }, []);
+
+  const handleSubmitReview = useCallback(() => {
+    if (newReview.rating === 0 || !newReview.comment.trim()) {
+      alert('Please provide both a rating and a comment.');
+      return;
+    }
+
+    const updatedProject = {
+      ...selectedProject,
+      reviews: [
+        ...selectedProject.reviews,
+        { ...newReview, date: new Date().toISOString(), user: 'Anonymous User' }
+      ]
+    };
+
+    const updatedProjects = projects.map(p =>
+      p.id === updatedProject.id ? updatedProject : p
+    );
+
+    setProjects(updatedProjects);
+    setSelectedProject(updatedProject);
+    localStorage.setItem('projects', JSON.stringify(updatedProjects));
+    setNewReview({ rating: 0, comment: '' });
+    calculateStatistics(updatedProject.reviews);
+  }, [newReview, selectedProject, projects, calculateStatistics]);
+
+  const filteredReviews = useMemo(() => {
+    if (!selectedProject) return [];
+    return selectedProject.reviews.filter(review =>
+      review.comment.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [selectedProject, searchTerm]);
+
+  const sortedReviews = useMemo(() => {
+    return [...filteredReviews].sort((a, b) => {
+      if (sortBy === 'date') {
+        return sortOrder === 'asc' 
+          ? new Date(a.date) - new Date(b.date)
+          : new Date(b.date) - new Date(a.date);
+      } else if (sortBy === 'rating') {
+        return sortOrder === 'asc' 
+          ? a.rating - b.rating
+          : b.rating - a.rating;
+      }
+      return 0;
+    });
+  }, [filteredReviews, sortBy, sortOrder]);
+
+  const paginatedReviews = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return sortedReviews.slice(startIndex, startIndex + itemsPerPage);
+  }, [sortedReviews, currentPage]);
+
+  const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
+
+  const RatingStars = ({ rating, onRatingChange = null }) => {
+    return (
+      <div className="rating-stars">
+        {[1, 2, 3, 4, 5].map((star) => (
           <Star
-            key={i}
-            size={24}
-            onClick={() => setRating(i + 1)}
-            fill={i < rating ? "#ffc107" : "none"}
-            stroke={i < rating ? "#ffc107" : "#ccc"}
-            style={{ cursor: 'pointer' }}
+            key={star}
+            size={20}
+            onClick={() => onRatingChange && onRatingChange(star)}
+            fill={star <= rating ? '#FFD700' : 'none'}
+            stroke={star <= rating ? '#FFD700' : '#CBD5E0'}
+            style={{ cursor: onRatingChange ? 'pointer' : 'default' }}
           />
         ))}
       </div>
-      <div className="form-actions">
-        <button type="submit">Submit Review</button>
-        <button type="button" onClick={onCancel}>Cancel</button>
+    );
+  };
+
+  const BarChart = ({ data }) => {
+    const maxValue = Math.max(...Object.values(data));
+    return (
+      <div className="bar-chart">
+        {Object.entries(data).map(([rating, count]) => (
+          <div key={rating} className="bar-chart-item">
+            <div className="bar-label">{rating}</div>
+            <div className="bar-container">
+              <div
+                className="bar"
+                style={{ width: `${(count / maxValue) * 100}%` }}
+              ></div>
+            </div>
+            <div className="bar-value">{count}</div>
+          </div>
+        ))}
       </div>
-    </motion.form>
-  );
-};
-
-export default function Reviews() {
-  const [projects, setProjects] = useState([]);
-  const [reviews, setReviews] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [showAddReview, setShowAddReview] = useState(false);
-  const [expandedProject, setExpandedProject] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    // Load projects and reviews from localStorage
-    const storedProjects = JSON.parse(localStorage.getItem('projects') || '[]');
-    const storedReviews = JSON.parse(localStorage.getItem('reviews') || '[]');
-    setProjects(storedProjects);
-    setReviews(storedReviews);
-  }, []);
-
-  const handleAddReview = (newReview) => {
-    const updatedReviews = [...reviews, newReview];
-    setReviews(updatedReviews);
-    localStorage.setItem('reviews', JSON.stringify(updatedReviews));
-
-    // Update the project's review count
-    const updatedProjects = projects.map(project =>
-      project.id === newReview.projectId
-        ? { ...project, reviews: (project.reviews || 0) + 1 }
-        : project
     );
-    setProjects(updatedProjects);
-    localStorage.setItem('projects', JSON.stringify(updatedProjects));
-
-    setShowAddReview(false);
   };
 
-  const toggleProjectExpansion = (projectId) => {
-    setExpandedProject(expandedProject === projectId ? null : projectId);
-  };
+  const LineChart = ({ data }) => {
+    const maxRating = 5;
+    const chartHeight = 100;
+    const pointRadius = 4;
 
-  const filteredReviews = useMemo(() => {
-    return reviews.filter(review =>
-      (review.content && review.content.toLowerCase().includes(searchTerm.toLowerCase()))
+    const points = data.map((item, index) => {
+      const x = (index / (data.length - 1)) * 100;
+      const y = 100 - (item.rating / maxRating) * 100;
+      return `${x},${y}`;
+    });
+
+    return (
+      <svg className="line-chart" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <polyline
+          fill="none"
+          stroke="#4299E1"
+          strokeWidth="2"
+          points={points.join(' ')}
+        />
+        {data.map((item, index) => {
+          const x = (index / (data.length - 1)) * 100;
+          const y = 100 - (item.rating / maxRating) * 100;
+          return (
+            <circle
+              key={index}
+              cx={x}
+              cy={y}
+              r={pointRadius}
+              fill="#4299E1"
+            />
+          );
+        })}
+      </svg>
     );
-  }, [reviews, searchTerm]);
-
-  // Get most recent reviews
-  const recentReviews = useMemo(() => {
-    return [...filteredReviews].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
-  }, [filteredReviews]);
+  };
 
   return (
     <div className="reviews-page">
-      <header className="reviews-header">
-        <h1>Project Reviews</h1>
-        <div className="review-tools">
-          <div className="search-bar">
-            <Search size={20} />
-            <input
-              type="text"
-              placeholder="Search reviews..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
-      </header>
+      <h1 className="page-title">Project Reviews Dashboard</h1>
+      
+      <div className="dashboard-layout">
+        <aside className="project-list">
+          <h2>Select a Project</h2>
+          {projects.map(project => (
+            <button
+              key={project.id}
+              className={`project-item ${selectedProject?.id === project.id ? 'selected' : ''}`}
+              onClick={() => handleProjectSelect(project)}
+            >
+              {project.name}
+            </button>
+          ))}
+        </aside>
 
-      <div className="recent-reviews">
-        <h2>Most Recent Reviews</h2>
-        {recentReviews.length > 0 ? (
-          recentReviews.map(review => (
-            <ReviewCard key={review.date} review={review} projectTitle={projects.find(p => p.id === review.projectId)?.name || "Unknown Project"} />
-          ))
-        ) : (
-          <p>No recent reviews found.</p>
-        )}
-      </div>
-
-      <div className="project-list">
-        {projects.map(project => (
-          <div key={project.id} className="project-item">
-            <div className="project-summary" onClick={() => toggleProjectExpansion(project.id)}>
-              <h3>{project.name}</h3>
-              <span>{project.reviews || 0} reviews</span>
-              {expandedProject === project.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        {selectedProject && (
+          <main className="project-reviews">
+            <h2>{selectedProject.name} - Reviews</h2>
+            
+            <div className="statistics-grid">
+              <div className="stat-card">
+                <div className="stat-icon"><Star size={24} /></div>
+                <div className="stat-content">
+                  <h3>Average Rating</h3>
+                  <p className="stat-value">{statistics.averageRating}</p>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon"><MessageSquare size={24} /></div>
+                <div className="stat-content">
+                  <h3>Total Reviews</h3>
+                  <p className="stat-value">{statistics.totalReviews}</p>
+                </div>
+              </div>
+              <div className="stat-card wide">
+                <h3>Rating Distribution</h3>
+                <BarChart data={statistics.ratingDistribution} />
+              </div>
+              <div className="stat-card wide">
+                <h3>Recent Trend</h3>
+                <LineChart data={statistics.recentTrend} />
+              </div>
             </div>
-            <AnimatePresence>
-              {expandedProject === project.id && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="project-reviews">
-                    {filteredReviews.filter(review => review.projectId === project.id).map((review) => (
-                      <ReviewCard key={review.date} review={review} projectTitle={project.name} />
-                    ))}
-                    {filteredReviews.filter(review => review.projectId === project.id).length === 0 && (
-                      <p>No reviews found for this project.</p>
-                    )}
-                    <button
-                      className="add-review-btn"
-                      onClick={() => {
-                        setSelectedProject(project);
-                        setShowAddReview(true);
-                      }}
-                    >
-                      <Send size={16} /> Add Review
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        ))}
-      </div>
 
-      <AnimatePresence>
-        {showAddReview && selectedProject && (
-          <AddReviewForm
-            projectId={selectedProject.id}
-            projectTitle={selectedProject.name}
-            onSubmit={handleAddReview}
-            onCancel={() => setShowAddReview(false)}
-          />
+            <div className="review-controls">
+              <div className="search-box">
+                <Search size={20} />
+                <input
+                  type="text"
+                  placeholder="Search reviews..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="sort-controls">
+                <label>Sort by:</label>
+                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                  <option value="date">Date</option>
+                  <option value="rating">Rating</option>
+                </select>
+                <button onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}>
+                  {sortOrder === 'asc' ? '↑' : '↓'}
+                </button>
+              </div>
+            </div>
+
+            <div className="review-list">
+              <h3>Reviews</h3>
+              {paginatedReviews.map((review, index) => (
+                <div key={index} className="review-item">
+                  <div className="review-header">
+                    <RatingStars rating={review.rating} />
+                    <span className="review-user"><User size={16} /> {review.user}</span>
+                    <span className="review-date"><Calendar size={16} /> {new Date(review.date).toLocaleDateString()}</span>
+                  </div>
+                  <p className="review-comment">{review.comment}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="pagination">
+              <button 
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <span>{currentPage} / {totalPages}</span>
+              <button 
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+
+            <div className="new-review">
+              <h3>Add Your Review</h3>
+              <RatingStars rating={newReview.rating} onRatingChange={handleRatingChange} />
+              <textarea
+                value={newReview.comment}
+                onChange={handleCommentChange}
+                placeholder="Write your review here..."
+              />
+              <button onClick={handleSubmitReview} className="submit-button">Submit Review</button>
+            </div>
+          </main>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
-}
+};
+
+export default Reviews;

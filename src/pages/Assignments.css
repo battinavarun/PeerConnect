@@ -1,23 +1,197 @@
 /* Assignments.css */
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+:root {
+  --primary-color: #4a90e2;
+  --secondary-color: #50c878;
+  --background-color: #f8f9fa;
+  --text-color: #333;
+  --border-color: #e0e0e0;
+  --error-color: #e74c3c;
+  --success-color: #27ae60;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition-speed: 0.3s;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
+}
+
 .assignments-container {
-  padding: 2rem 0;
-  background-color: #f8f9fa;
-  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.assignments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
 }
 
 .assignments-title {
-  font-size: 2.5rem;
-  color: #343a40;
-  margin-bottom: 2rem;
-  text-align: center;
-  font-weight: 300;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tab-navigation {
+  display: flex;
+  background-color: #f1f3f5;
+  border-radius: 30px;
+  padding: 5px;
+}
+
+.tab-button {
+  background-color: transparent;
+  border: none;
+  color: var(--text-color);
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all var(--transition-speed) ease;
+  border-radius: 25px;
+}
+
+.tab-button.active {
+  color: white;
+  background-color: var(--primary-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-panel {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 40px;
+}
+
+.admin-panel h2 {
+  color: var(--primary-color);
+  margin-top: 0;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color var(--transition-speed) ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="date"]:focus,
+.form-group textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.form-group textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.submit-button,
+.cancel-button,
+.edit-button,
+.delete-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all var(--transition-speed) ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.submit-button {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: #3a7bd5;
+  box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+}
+
+.cancel-button {
+  background-color: #e0e0e0;
+  color: #333;
+  margin-left: 10px;
+}
+
+.cancel-button:hover {
+  background-color: #d0d0d0;
+}
+
+.edit-button {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #45b76c;
+  box-shadow: 0 4px 8px rgba(80, 200, 120, 0.3);
+}
+
+.delete-button {
+  background-color: var(--error-color);
+  color: white;
+  margin-left: 10px;
+}
+
+.delete-button:hover {
+  background-color: #d63031;
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+.assignments-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
 }
 
 .assignment-card {
-  transition: all 0.3s ease;
-  border: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  padding: 25px;
+  transition: all var(--transition-speed) ease;
 }
 
 .assignment-card:hover {
@@ -25,84 +199,248 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.assignment-card .card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #495057;
+.assignment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.assignment-card .card-text {
-  color: #6c757d;
+.assignment-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary-color);
 }
 
-.nav-tabs {
-  border-bottom: 2px solid #dee2e6;
-}
-
-.nav-tabs .nav-link {
-  border: none;
-  color: #495057;
+.due-date {
+  font-size: 14px;
+  color: #777;
   font-weight: 500;
-  padding: 0.75rem 1rem;
 }
 
-.nav-tabs .nav-link:hover {
-  border: none;
-  color: #007bff;
+.due-date.overdue {
+  color: var(--error-color);
+  font-weight: 700;
 }
 
-.nav-tabs .nav-link.active {
-  border: none;
-  border-bottom: 2px solid #007bff;
-  color: #007bff;
+.assignment-description {
+  margin-bottom: 25px;
+  color: #555;
+  line-height: 1.6;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
+.status-bar {
+  margin-bottom: 20px;
 }
 
-.btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #0056b3;
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
-.btn-outline-primary {
-  color: #007bff;
-  border-color: #007bff;
+.status.pending {
+  background-color: #ffeaa7;
+  color: #fdcb6e;
 }
 
-.btn-outline-primary:hover {
-  background-color: #007bff;
-  color: white;
+.status.submitted {
+  background-color: #55efc4;
+  color: #00b894;
 }
 
-.modal-content {
-  border-radius: 0.5rem;
+.file-upload-area {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.modal-header {
-  border-bottom: none;
-  padding: 1.5rem 1.5rem 0.5rem;
+.file-input {
+  display: none;
 }
 
-.modal-body {
-  padding: 1.5rem;
+.file-label {
+  padding: 10px 15px;
+  background-color: #f1f3f5;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: all var(--transition-speed) ease;
 }
 
-.form-control {
-  border-radius: 0.25rem;
+.file-label:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
 }
 
-.form-control:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+.view-file-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-speed) ease;
 }
 
-.react-datepicker-wrapper {
-  display: block;
+.view-file-link:hover {
+  color: #3a7bd5;
+  text-decoration: underline;
 }
 
-.react-datepicker__input-container input {
+.peer-review-section,
+.submissions-overview {
+  margin-top: 30px;
+  border-top: 2px solid var(--border-color);
+  padding-top: 25px;
+}
+
+.peer-review-section h3,
+.submissions-overview h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+.peer-submission,
+.submission-entry {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.peer-submission:hover,
+.submission-entry:hover {
+  background-color: #f1f3f5;
+}
+
+.review-form input[type="number"],
+.review-form textarea {
   width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color var(--transition-speed) ease;
+}
+
+.review-form input[type="number"]:focus,
+.review-form textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.review-submitted {
+  background-color: #e8f6f3;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.reviews {
+  margin-top: 20px;
+}
+
+.review {
+  background-color: #f1f3f5;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.review:hover {
+  background-color: #e9ecef;
+}
+
+@media (max-width: 768px) {
+  .assignments-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tab-navigation {
+    margin-top: 20px;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .assignments-list {
+    grid-template-columns: 1fr;
+  }
+
+  .submit-button,
+  .cancel-button,
+  .edit-button,
+  .delete-button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .delete-button {
+    margin-left: 0;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.assignment-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.submit-button,
+.cancel-button,
+.edit-button,
+.delete-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-button::after,
+.cancel-button::after,
+.edit-button::after,
+.delete-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+.submit-button:focus:not(:active)::after,
+.cancel-button:focus:not(:active)::after,
+.edit-button:focus:not(:active)::after,
+.delete-button:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
 }

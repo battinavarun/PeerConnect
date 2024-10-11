@@ -39,11 +39,14 @@ function MyNavbar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false); // Track admin status
 
   useEffect(() => {
     const checkLoginStatus = () => {
       const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true';
+      const adminStatus = localStorage.getItem('isAdmin') === 'true';
       setIsLoggedIn(loggedInStatus);
+      setIsAdmin(adminStatus); // Update admin status state
     };
 
     // Check login status immediately
@@ -83,6 +86,7 @@ function MyNavbar() {
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userPassword');
     setIsLoggedIn(false);
+    setIsAdmin(false); // Reset admin status on logout
     setShowLogoutModal(false);
     navigate('/login');
   };
@@ -121,15 +125,7 @@ function MyNavbar() {
               >
                 Projects
               </Nav.Link>
-              <Nav.Link
-                as={Link}
-                to="/reviews"
-                style={navLinkStyle}
-                onMouseOver={(e) => (e.target.style.color = '#FFC107')}
-                onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
-              >
-                Reviews
-              </Nav.Link>
+              
               <Nav.Link
                 as={Link}
                 to="/peerreview"
@@ -148,6 +144,18 @@ function MyNavbar() {
               >
                 Assignments
               </Nav.Link>
+              {/* Conditionally render the Dashboard link for admins only */}
+              {isLoggedIn && isAdmin && (
+                <Nav.Link
+                  as={Link}
+                  to="/dashboard"
+                  style={navLinkStyle}
+                  onMouseOver={(e) => (e.target.style.color = '#FFC107')}
+                  onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
+                >
+                  Dashboard
+                </Nav.Link>
+              )}
               {isLoggedIn ? (
                 <LogoutButton
                   as={Button}
