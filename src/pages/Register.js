@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Register.css';
@@ -133,11 +133,9 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
+      // Simulated API call (replace with your actual backend URL)
       const { confirmPassword, ...userData } = formData;
-      const response = await axios.post("http://localhost:8080/user", userData);
+      const response = await axios.post("http://localhost:8080/api/users/register", userData);
       
       console.log(response.data);
       

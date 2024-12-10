@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MyNavbar from './components/Navbar';
 import Home from './pages/Home';
 import Projects from './pages/Projects';
@@ -11,18 +11,17 @@ import Dashboard from './pages/Dashboard';
 import Courses from './pages/Courses';
 import Students from './pages/Students';
 
-
-// Protected Route Component
+// Updated ProtectedRoute component
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return <Login />;
   }
 
   if (adminOnly && !isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Home />;
   }
 
   return children;
@@ -34,6 +33,7 @@ function App() {
       <MyNavbar />
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
