@@ -7,7 +7,6 @@ const PeerReview = () => {
   const [users, setUsers] = useState([]);
   const [newSubmission, setNewSubmission] = useState({ title: '', description: '', files: [] });
   const [activeTab, setActiveTab] = useState('submissions');
-  const [stats, setStats] = useState([]);
   const [alert, setAlert] = useState(null);
   const [selectedReview, setSelectedReview] = useState(null);
   const [viewingFile, setViewingFile] = useState(null);
@@ -51,12 +50,6 @@ const PeerReview = () => {
         status: 'Completed',
         comments: 'Innovative approach, needs more benchmarking.',
       },
-    ]);
-    setStats([
-      { name: 'Jan', submissions: 4, completedReviews: 3 },
-      { name: 'Feb', submissions: 6, completedReviews: 5 },
-      { name: 'Mar', submissions: 8, completedReviews: 7 },
-      { name: 'Apr', submissions: 10, completedReviews: 8 },
     ]);
   }, []);
 
@@ -151,49 +144,85 @@ const PeerReview = () => {
   const FileViewer = ({ file, onClose }) => {
     return (
       <div className="file-viewer-overlay" onClick={onClose}>
-        <div className="file-viewer-content" onClick={(e) => e.stopPropagation()}>
-          <div className="file-viewer-header">
-            <span className="file-viewer-title">{file.name}</span>
-            <button className="file-viewer-close" onClick={onClose}>
+        <div 
+          className="file-viewer-content" 
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            width: '90vw',
+            height: '90vh',
+            maxWidth: '1600px',
+            maxHeight: '1200px',
+            margin: 'auto',
+            position: 'relative',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            padding: '20px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          <div className="file-viewer-header" style={{ marginBottom: '16px' }}>
+            <span className="file-viewer-title" style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              {file.name}
+            </span>
+            <button 
+              className="file-viewer-close" 
+              onClick={onClose}
+              style={{
+                position: 'absolute',
+                right: '20px',
+                top: '20px',
+                fontSize: '24px',
+                border: 'none',
+                background: 'none',
+                cursor: 'pointer'
+              }}
+            >
               &times;
             </button>
           </div>
-          {file.name.endsWith('.pdf') ? (
-            <iframe src={file.content} width="100%" height="500px" />
-          ) : file.name.match(/\.(jpeg|jpg|gif|png)$/) ? (
-            <img src={file.content} alt={file.name} style={{ maxWidth: '100%' }} />
-          ) : (
-            <pre>{file.content}</pre>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const BarChart = ({ data }) => {
-    const maxValue = Math.max(...data.flatMap(item => [item.submissions, item.completedReviews]));
-    
-    return (
-      <div className="bar-chart">
-        {data.map((item, index) => (
-          <div key={index} className="bar-group">
-            <div className="bar-label">{item.name}</div>
-            <div className="bar-container">
-              <div 
-                className="bar submissions" 
-                style={{ height: `${(item.submissions / maxValue) * 100}%` }}
+          <div style={{ flex: 1, overflow: 'auto' }}>
+            {file.name.endsWith('.pdf') ? (
+              <iframe 
+                src={file.content} 
+                style={{
+                  width: '100%',
+                  height: 'calc(90vh - 100px)',
+                  border: 'none'
+                }}
+              />
+            ) : file.name.match(/\.(jpeg|jpg|gif|png)$/) ? (
+              <img 
+                src={file.content} 
+                alt={file.name} 
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: 'calc(90vh - 100px)',
+                  objectFit: 'contain',
+                  margin: 'auto',
+                  display: 'block'
+                }}
+              />
+            ) : (
+              <pre 
+                style={{
+                  width: '100%',
+                  height: 'calc(90vh - 100px)',
+                  overflow: 'auto',
+                  backgroundColor: '#f5f5f5',
+                  padding: '20px',
+                  margin: 0,
+                  fontSize: '16px',
+                  lineHeight: '1.5',
+                  fontFamily: 'monospace'
+                }}
               >
-                <span className="bar-value">{item.submissions}</span>
-              </div>
-              <div 
-                className="bar completed-reviews" 
-                style={{ height: `${(item.completedReviews / maxValue) * 100}%` }}
-              >
-                <span className="bar-value">{item.completedReviews}</span>
-              </div>
-            </div>
+                {file.content}
+              </pre>
+            )}
           </div>
-        ))}
+        </div>
       </div>
     );
   };
@@ -225,12 +254,6 @@ const PeerReview = () => {
           onClick={() => setActiveTab('reviews')}
         >
           Reviews
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'stats' ? 'active' : ''}`}
-          onClick={() => setActiveTab('stats')}
-        >
-          Statistics
         </button>
       </nav>
 
@@ -318,13 +341,6 @@ const PeerReview = () => {
                 );
               })}
             </ul>
-          </section>
-        )}
-
-        {activeTab === 'stats' && (
-          <section className="statistics-section">
-            <h2>Statistics</h2>
-            <BarChart data={stats} />
           </section>
         )}
       </main>

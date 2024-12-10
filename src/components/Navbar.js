@@ -3,207 +3,195 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Navbar, Nav, Container, Modal, Button } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
 
-// Inline styles for the Navbar components
 const navbarStyle = {
   backgroundColor: '#4285F4',
-  padding: '10px',
+  padding: '15px',
+  color: '#FAF9F6',
+  width: '100%',
+  zIndex: 1000,
+  position: 'sticky',
+  top: 0
 };
 
 const navLinkStyle = {
   color: '#FAF9F6',
   textDecoration: 'none',
   fontSize: '1.2rem',
+  margin: '0 12px',
+  display: 'flex',
+  alignItems: 'center',
+  fontWeight: '500'
 };
 
 const brandStyle = {
   color: '#FAF9F6',
   textDecoration: 'none',
   fontWeight: 'bold',
-  fontSize: '1.8rem',
+  fontSize: '2rem',
+  marginRight: '30px'
 };
 
-// Keyframes for the blinking effect
 const blink = keyframes`
   0% { opacity: 1; }
-  50% { opacity: 0.7; }
+  50% { opacity: 0.5; }
   100% { opacity: 1; }
 `;
 
-// Styled component for the blinking logout button
 const BlinkingLogout = styled(Nav.Link)`
   animation: ${blink} 2s linear infinite;
+  color: #FAF9F6 !important;
+  font-weight: bold;
 `;
 
-function MyNavbar() {
+function CombinedNavbar() {
   const navigate = useNavigate();
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [isBlinking, setIsBlinking] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false); // Track admin status
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     const checkLoginStatus = () => {
       const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true';
       const adminStatus = localStorage.getItem('isAdmin') === 'true';
-      setIsLoggedIn(loggedInStatus);
-      setIsAdmin(adminStatus); // Update admin status state
+      
+      if (loggedInStatus) {
+        setIsLoggedIn(true);
+        setIsAdmin(adminStatus);
+      } else {
+        setIsLoggedIn(false);
+        setIsAdmin(false);
+        navigate('/login');
+      }
     };
 
-    // Check login status immediately
     checkLoginStatus();
-
-    // Set up an interval to check login status periodically
-    const intervalId = setInterval(checkLoginStatus, 1000); // Check every second
-
-    // Set up event listener for storage changes
     window.addEventListener('storage', checkLoginStatus);
 
-    if (isLoggedIn) {
-      const blinkInterval = setInterval(() => {
-        setIsBlinking((prev) => !prev);
-      }, 5000); // Toggle blinking every 5 seconds
-
-      return () => {
-        clearInterval(blinkInterval);
-        clearInterval(intervalId);
-        window.removeEventListener('storage', checkLoginStatus);
-      };
-    }
-
     return () => {
-      clearInterval(intervalId);
       window.removeEventListener('storage', checkLoginStatus);
     };
-  }, [isLoggedIn]);
+  }, [navigate]);
 
-  const handleLogoutClick = () => {
-    setShowLogoutModal(true);
-  };
+  const handleLogoutClick = () => setShowLogoutModal(true);
 
   const handleLogoutConfirm = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('isAdmin');
     localStorage.removeItem('userEmail');
-    localStorage.removeItem('userPassword');
     setIsLoggedIn(false);
-    setIsAdmin(false); // Reset admin status on logout
+    setIsAdmin(false);
     setShowLogoutModal(false);
     navigate('/login');
   };
 
-  const handleLogoutCancel = () => {
-    setShowLogoutModal(false);
-  };
+  const handleLogoutCancel = () => setShowLogoutModal(false);
 
-  const LogoutButton = isBlinking ? BlinkingLogout : Nav.Link;
+  if (!isLoggedIn) return null;
 
   return (
     <>
       <Navbar expand="lg" style={navbarStyle}>
         <Container fluid>
-          <Navbar.Brand as={Link} to="/" style={brandStyle} className="ms-0">
+          <Navbar.Brand as={Link} to="/home" style={brandStyle}>
             PeerConnect
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
-              <Nav.Link
-                as={Link}
-                to="/"
-                style={navLinkStyle}
-                onMouseOver={(e) => (e.target.style.color = '#FFC107')}
-                onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
-              >
-                Home
-              </Nav.Link>
-              <Nav.Link
-                as={Link}
-                to="/projects"
-                style={navLinkStyle}
-                onMouseOver={(e) => (e.target.style.color = '#FFC107')}
-                onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
-              >
-                Projects
-              </Nav.Link>
-              
-              <Nav.Link
-                as={Link}
-                to="/peerreview"
-                style={navLinkStyle}
-                onMouseOver={(e) => (e.target.style.color = '#FFC107')}
-                onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
-              >
-                Peer Review
-              </Nav.Link>
-              <Nav.Link
-                as={Link}
-                to="/assignments"
-                style={navLinkStyle}
-                onMouseOver={(e) => (e.target.style.color = '#FFC107')}
-                onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
-              >
-                Assignments
-              </Nav.Link>
-              {/* Conditionally render the Dashboard link for admins only */}
-              {isLoggedIn && isAdmin && (
+            <Nav className="ms-auto align-items-center">
+              <div className="d-flex align-items-center">
                 <Nav.Link
                   as={Link}
-                  to="/dashboard"
+                  to={isAdmin ? "/home" : "/home"}
                   style={navLinkStyle}
                   onMouseOver={(e) => (e.target.style.color = '#FFC107')}
                   onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
                 >
-                  Dashboard
+                  Home
                 </Nav.Link>
-              )}
-              {isLoggedIn ? (
-                <LogoutButton
+                <Nav.Link
+                  as={Link}
+                  to="/projects"
+                  style={navLinkStyle}
+                  onMouseOver={(e) => (e.target.style.color = '#FFC107')}
+                  onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
+                >
+                  Projects
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/peerreview"
+                  style={navLinkStyle}
+                  onMouseOver={(e) => (e.target.style.color = '#FFC107')}
+                  onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
+                >
+                  Peer Review
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/assignments"
+                  style={navLinkStyle}
+                  onMouseOver={(e) => (e.target.style.color = '#FFC107')}
+                  onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
+                >
+                  Assignments
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/courses"
+                  style={navLinkStyle}
+                  onMouseOver={(e) => (e.target.style.color = '#FFC107')}
+                  onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
+                >
+                  Courses
+                </Nav.Link>
+                {isAdmin && (
+                  <>
+                    <Nav.Link
+                      as={Link}
+                      to="/dashboard"
+                      style={navLinkStyle}
+                      onMouseOver={(e) => (e.target.style.color = '#FFC107')}
+                      onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
+                    >
+                      Dashboard
+                    </Nav.Link>
+                    <Nav.Link
+                      as={Link}
+                      to="/newstudents"
+                      style={navLinkStyle}
+                      onMouseOver={(e) => (e.target.style.color = '#FFC107')}
+                      onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
+                    >
+                      New Students
+                    </Nav.Link>
+                  </>
+                )}
+                <BlinkingLogout
                   as={Button}
                   variant="link"
-                  style={navLinkStyle}
+                  style={{...navLinkStyle, marginLeft: '20px', color: '#FF6B6B'}}
                   onClick={handleLogoutClick}
-                  onMouseOver={(e) => (e.target.style.color = '#FFC107')}
-                  onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
+                  onMouseOver={(e) => (e.target.style.color = '#FF4757')}
+                  onMouseOut={(e) => (e.target.style.color = '#FF6B6B')}
                 >
                   Logout
-                </LogoutButton>
-              ) : (
-                <>
-                  <Nav.Link
-                    as={Link}
-                    to="/login"
-                    style={navLinkStyle}
-                    onMouseOver={(e) => (e.target.style.color = '#FFC107')}
-                    onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
-                  >
-                    Login
-                  </Nav.Link>
-                  <Nav.Link
-                    as={Link}
-                    to="/register"
-                    style={navLinkStyle}
-                    onMouseOver={(e) => (e.target.style.color = '#FFC107')}
-                    onMouseOut={(e) => (e.target.style.color = '#FAF9F6')}
-                  >
-                    Register
-                  </Nav.Link>
-                </>
-              )}
+                </BlinkingLogout>
+              </div>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      <Modal show={showLogoutModal} onHide={handleLogoutCancel} centered>
+      <Modal show={showLogoutModal} onHide={handleLogoutCancel}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Logout</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to log out?</Modal.Body>
+        <Modal.Body>Are you sure you want to logout?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleLogoutCancel}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleLogoutConfirm}>
+          <Button variant="danger" onClick={handleLogoutConfirm}>
             Logout
           </Button>
         </Modal.Footer>
@@ -212,4 +200,4 @@ function MyNavbar() {
   );
 }
 
-export default MyNavbar;
+export default CombinedNavbar;
